@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 맞춤형 추천 시스템</title>
+    <title>AI 맞춤형 추천 시스템 (정형화 버전)</title>
     <style>
         body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; background-color: #f9f9f9; }
         h1, h2, h3 { color: #333; }
@@ -23,7 +23,7 @@
 <body>
 
     <h1>매트릭스 기반 맞춤형 제품 추천 시스템</h1>
-    <p>개발자가 매긴 상품의 행렬과 소비자가 원하는 행렬의 <strong>코사인 유사도</strong>를 계산합니다.</p>
+    <p>제품의 특성 행렬과 소비자의 중요도 성향 행렬의 <strong>코사인 유사도(행렬 곱 기반)</strong>를 계산합니다.</p>
 
     <div class="section">
         <h2>[관리자] 제품 데이터 등록</h2>
@@ -33,36 +33,35 @@
         </div>
         
         <div class="form-group">
-            <label>가성비 점수:</label>
+            <label>가격대 (높을수록 프리미엄):</label>
             <select id="prodCost">
-                <option value="1">프리미엄/고가 라인</option>
-                <option value="2">다소 비쌈</option>
+                <option value="5">고가 라인</option>
+                <option value="4">다소 비싼 제품</option>
                 <option value="3" selected>적당한 가격대</option>
-                <option value="4">가격 대비 성능 우수</option>
-                <option value="5">압도적인 최저가/혜자</option>
+                <option value="2">가성비가 좋은 편</option>
+                <option value="1">초저가/보급형 라인</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label>상황(범용성) 점수:</label>
+            <label>상황 범용성 (높을수록 넓은 범위):</label>
             <select id="prodContext">
-                <option value="1">특수한 상황 전용 - 예: 전문 작업실, 수중용</option>
-                <option value="2">제한적 공간 - 예: 집 안에서만 사용 가능</option>
-                <option value="3">평범한 일상 - 예: 일반적인 출퇴근, 등하교</option>
-                <option value="4" selected>다양한 환경 - 예: 카페, 미팅룸, 야외 등</option>
-                <option value="5">익스트림 올라운더 - 예: 여행, 캠핑, 군부대 등 장소 불문</option>
+                <option value="5">어디서나(야외/캠핑/장소불문)</option>
+                <option value="4" selected>다양한 환경 (카페/미팅룸/이동 시)</option>
+                <option value="3">평범한 일상 (출퇴근/등하교)</option>
+                <option value="2">제한적 공간 (실내/집 안에서만)</option>
+                <option value="1">특수 상황 전용 (연구실/수중 등)</option>
             </select>
-            <small class="help-text">이 제품이 얼마나 다양한 상황/장소에 커버 가능한지를 매깁니다.</small>
         </div>
 
         <div class="form-group">
-            <label>휴대성 점수:</label>
+            <label>휴대성 (높을수록 가볍고 작음):</label>
             <select id="prodPort">
-                <option value="1">매우 무거움 / 거치형</option>
-                <option value="2">휴대 가능하나 무게가 있음</option>
+                <option value="5" selected>초경량/주머니에 쏙</option>
+                <option value="4">가볍고 슬림함</option>
                 <option value="3">일반적인 무게</option>
-                <option value="4">가벼워서 들고 다니기 좋음</option>
-                <option value="5" selected>주머니에 쏙 들어가는 초경량</option>
+                <option value="2">휴대 가능하나 다소 무거움</option>
+                <option value="1">매우 무거움 / 거치 전용</option>
             </select>
         </div>
 
@@ -73,45 +72,42 @@
             <thead>
                 <tr>
                     <th>제품명</th>
-                    <th>가성비</th>
-                    <th>상황(범용성)</th>
+                    <th>가격수준</th>
+                    <th>범용성</th>
                     <th>휴대성</th>
                 </tr>
             </thead>
-            <tbody id="productTableBody">
-                </tbody>
+            <tbody id="productTableBody"></tbody>
         </table>
     </div>
 
     <div class="section">
-        <h2> [소비자] 내가 중요하게 생각하는 조건</h2>
+        <h2> [소비자] 내가 중요하게 생각하는 조건 (가중치)</h2>
         
         <div class="form-group">
-            <label>가성비 중요도:</label>
+            <label>가격 중요도:</label>
             <select id="userCost">
-                <option value="1">무조건 최고급</option>
-                <option value="3">성능과 가격 타협 가능</option>
-                <option value="5" selected>무조건 싸고 좋은거</option>
+                <option value="5" selected>돈 상관없음, 최고급 희망</option>
+                <option value="3">가격과 성능 적절한 타협</option>
+                <option value="1">무조건 저렴한 가성비 희망</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label>사용할 상황 범위:</label>
+            <label>이동성/범용성 중요도:</label>
             <select id="userContext">
-                <option value="1">한 장소에서만 쓸 것이다</option>
-                <option value="3" selected>상적인 출퇴근 공간 정도면 된다</option>
-                <option value="5">언제 어디서나, 야외에서도 쓸 것이다</option>
-                <option value="4"> </option>
+                <option value="5">언제 어디서나 야외에서도 쓸 것</option>
+                <option value="3" selected>일반적인 일상 영역 커버</option>
+                <option value="1">한 장소(집/사무실)에 박아두고 쓸 것</option>
             </select>
-            <small class="help-text">💡 본인이 이 제품을 얼마나 다양한 환경에서 굴릴(?) 예정인지 선택합니다.</small>
         </div>
 
         <div class="form-group">
-            <label>휴대성 중요도:</label>
+            <label>경량화 중요도:</label>
             <select id="userPort">
-                <option value="1">무거워도 상관없다</option>
-                <option value="3">보통 수준의 무게면 만족</option>
-                <option value="5" selected>무조건 가볍고 작아야 한다</option>
+                <option value="5">무조건 가볍고 작아야 함</option>
+                <option value="3">보통 수준이면 만족</option>
+                <option value="1" selected>무거워도 상관없음 성능 중심</option>
             </select>
         </div>
 
@@ -137,12 +133,12 @@
     </div>
 
     <script>
-        // 초기 데이터 세팅
+        // 새로운 개념에 맞게 초기 제품 데이터 벡터 수정
         const products = [
-            { name: "집돌이용 하이엔드 PC", vector: [1, 1, 1] },   // 가격 비쌈(1), 집안 전용(1), 무거움(1)
-            { name: "대학생 가성비 노트북", vector: [4, 4, 3] }, // 가성비 좋음(4), 여러 환경(4), 보통 무게(3)
-            { name: "프로 캠퍼용 아웃도어 빔", vector: [2, 5, 5] },
-            { name: "선풍기", vector: [3, 2, 1] } // 약간 비쌈(2), 모든 장소(5), 초경량(5)
+            { name: "집돌이용 하이엔드 PC", vector: [5, 1, 1] },   // 최고급(5), 실내전용(1), 무거움(1)
+            { name: "대학생 가성비 노트북", vector: [2, 4, 4] },   // 저렴한편(2), 이동잦음(4), 가벼움(4)
+            { name: "프로 캠퍼용 아웃도어 빔", vector: [4, 5, 3] }, // 비쌈(4), 올라운더(5), 보통무게(3)
+            { name: "선풍기", vector: [1, 2, 1] }                 // 초저가(1), 제한적(2), 거치형(1)
         ];
 
         function updateProductTable() {
@@ -179,6 +175,7 @@
         }
 
         function calculateCosineSimilarity(vecA, vecB) {
+            // 행렬 곱 연산을 통한 내적(Dot Product) 구하기
             let dotProduct = 0;
             for (let i = 0; i < vecA.length; i++) {
                 dotProduct += vecA[i] * vecB[i];
@@ -186,6 +183,8 @@
             const magA = getMagnitude(vecA);
             const magB = getMagnitude(vecB);
             if (magA === 0 || magB === 0) return 0;
+            
+            // 코사인 유사도 반환
             return dotProduct / (magA * magB);
         }
 
